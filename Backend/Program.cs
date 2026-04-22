@@ -2,7 +2,7 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// OpenAPI
+// Add OpenAPI
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -12,7 +12,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// Optional: comment this out for now if it keeps warning
+// You can leave this commented during local testing
 // app.UseHttpsRedirection();
 
 app.MapGet("/api/questions/random", async (

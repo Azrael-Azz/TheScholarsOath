@@ -4,8 +4,8 @@ public class EnemyQuizCombat : MonoBehaviour
 {
     public int damageToPlayerOnFail = 20;
     public int xpReward = 10;
-
     private bool waitingForQuizResult = false;
+    public QuizGate linkedGate;
 
     void Start()
     {
@@ -26,6 +26,7 @@ public class EnemyQuizCombat : MonoBehaviour
     public void BeginQuizCombat()
     {
         waitingForQuizResult = true;
+        Debug.Log("Enemy is now waiting for quiz result.");
     }
 
     void HandleQuizEnded(bool passed)
@@ -47,6 +48,11 @@ public class EnemyQuizCombat : MonoBehaviour
                 {
                     xp.AddXP(xpReward);
                 }
+            }
+
+            if (linkedGate != null)
+            {
+                linkedGate.OpenGate();
             }
 
             Destroy(gameObject);

@@ -5,11 +5,15 @@ using System.Collections.Generic;
 public class QuizTrigger : MonoBehaviour
 {
     public bool startOnEnter = false;
-    public QuizManager.Question[] questions;
     public string promptText = "Press E to start quiz";
 
-    bool playerInRange = false;
+    [Header("API Settings")]
+    public string subject = "Math";
+    public string difficulty = "Easy";
+    public string area = "Start";
+    public int questionCount = 3;
 
+    bool playerInRange = false;
 
     void Update()
     {
@@ -20,17 +24,23 @@ public class QuizTrigger : MonoBehaviour
         {
             StartQuiz();
         }
-        else
+        else if (Input.GetKeyDown(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.E))
-                StartQuiz();
+            StartQuiz();
         }
     }
+
     void StartQuiz()
     {
         if (QuizManager.Instance == null)
         {
             Debug.LogWarning("No QuizManager present in the scene.");
+            return;
+        }
+
+        if (QuestionApiService.Instance == null)
+        {
+            Debug.LogWarning("No QuestionApiService present in the scene.");
             return;
         }
 
@@ -40,8 +50,26 @@ public class QuizTrigger : MonoBehaviour
             enemyCombat.BeginQuizCombat();
         }
 
-        var qList = new List<QuizManager.Question>(questions);
-        QuizManager.Instance.StartQuiz(qList);
+        QuestionApiService.Instance.GetQuestions(
+            subject,
+            difficulty,
+            area,
+            questionCount,
+            quizQuestions =>
+            {
+                if (quizQuestions.Count == 0)
+                {
+                    Debug.LogWarning("No questions returned from API.");
+                    return;
+                }
+
+                QuizManager.Instance.StartQuiz(quizQuestions);
+            },
+            error =>
+            {
+                Debug.LogError("API error: " + error);
+            }
+        );
     }
 
     void OnTriggerEnter2D(Collider2D other)
