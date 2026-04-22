@@ -69,13 +69,17 @@ public class QuizManager : MonoBehaviour
         if (!active) return;
 
         var q = currentQuestions[currentIndex];
+
+        Debug.Log("Selected index: " + index);
+        Debug.Log("Correct index: " + q.correctIndex);
+        Debug.Log("Selected option: " + q.options[index]);
+        Debug.Log("Correct option: " + q.options[q.correctIndex]);
+
         bool correct = index == q.correctIndex;
         if (correct) score++;
 
         OnAnswerEvaluated?.Invoke(correct);
 
-        currentIndex++;
-        PushQuestion();
         if (correct)
         {
             SoundManager.Instance.PlaySound(SoundManager.Instance.correctSound);
@@ -84,6 +88,9 @@ public class QuizManager : MonoBehaviour
         {
             SoundManager.Instance.PlaySound(SoundManager.Instance.wrongSound);
         }
+
+        currentIndex++;
+        PushQuestion();
     }
 
     void FinishQuiz()

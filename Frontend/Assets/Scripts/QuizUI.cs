@@ -48,25 +48,37 @@ public class QuizUI : MonoBehaviour
         quizPanel.SetActive(false);
     }
 
-    void HandleQuestionChanged(QuizManager.Question q)
+    void HandleQuestionChanged(QuizManager.Question question)
     {
-        questionText.text = q.prompt;
+        questionText.text = question.prompt;
 
-        // safety: if options < buttons, disable extras
         for (int i = 0; i < optionButtons.Length; i++)
         {
-            if (i < q.options.Length)
-            {
-                optionButtons[i].gameObject.SetActive(true);
-                optionButtons[i].GetComponentInChildren<TMP_Text>().text = q.options[i];
+            Button button = optionButtons[i];
 
-                int captured = i;
-                optionButtons[i].onClick.RemoveAllListeners();
-                optionButtons[i].onClick.AddListener(() => qm.SubmitAnswer(captured));
+            if (i < question.options.Length)
+            {
+                button.gameObject.SetActive(true);
+
+                int capturedIndex = i;
+                string capturedOptionText = question.options[i];
+
+                TMP_Text textComponent = button.GetComponentInChildren<TMP_Text>(true);
+                textComponent.text = capturedOptionText;
+
+                Debug.Log($"Setup: slot {capturedIndex} = {button.name}, text = {capturedOptionText}");
+
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    Debug.Log("Clicked button index: " + capturedIndex);
+                    Debug.Log("Button text shown: " + capturedOptionText);
+                    qm.SubmitAnswer(capturedIndex);
+                });
             }
             else
             {
-                optionButtons[i].gameObject.SetActive(false);
+                button.gameObject.SetActive(false);
             }
         }
     }
